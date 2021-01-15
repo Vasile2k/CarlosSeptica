@@ -48,6 +48,8 @@
   <ItemGroup>
     <Compile Include="Card.cs" />
     <Compile Include="CardDealer.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="GameTable.cs" />
     <Compile Include="InterfaceForm.cs">
       <SubType>Form</SubType>

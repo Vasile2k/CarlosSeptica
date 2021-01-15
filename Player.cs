@@ -24,6 +24,22 @@ namespace CarlosSeptica
 
         private Card[] hand;
 
+        public int CardsInHand
+        {
+            get
+            {
+                return hand.ToList().Select(card => card != null).Count();
+            }
+        }
+
+        public bool IsHandFull
+        {
+            get
+            {
+                return CardsInHand == hand.Length;
+            }
+        }
+
         private List<Card> collectedCardStack;
 
         public int Score
@@ -39,6 +55,28 @@ namespace CarlosSeptica
             Type = type;
             hand = new Card[4];
             collectedCardStack = new List<Card>();
+        }
+
+        public Card[] GetCardsInHand()
+        {
+            return hand;
+        }
+
+        public void AddCardToStack(Card card)
+        {
+            collectedCardStack.Add(card);
+        }
+
+        public void AddCardInHand(Card card)
+        {
+            for(int i = 0; i < hand.Length; ++i)
+            {
+                if (hand[i] == null)
+                {
+                    hand[i] = card;
+                    break;
+                }
+            }
         }
 
         public void Draw(Graphics g, int x, int y)
@@ -67,16 +105,6 @@ namespace CarlosSeptica
             // Draw score
             drawFont = new Font("Arial", 16);
             g.DrawString("Score: " + Score, drawFont, drawBrush, x + 450, h ? y + 16 + 133 : y - 20 - 16);
-        }
-
-        public Card[] GetCardsInHand()
-        {
-            return hand;
-        }
-
-        public void addCardToStack(Card card)
-        {
-            collectedCardStack.Add(card);
         }
     }
 }

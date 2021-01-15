@@ -6,11 +6,14 @@ using System.Windows.Forms;
 
 namespace CarlosSeptica
 {
-    static class CarlosSeptica
+    public static class CarlosSeptica
     {
+        public static Game game;
+
         [STAThread]
-        static void Main()
+        public static void Main()
         {
+            game = new Game();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new InterfaceForm());
