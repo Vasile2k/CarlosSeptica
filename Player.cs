@@ -29,7 +29,7 @@ namespace CarlosSeptica
         {
             get
             {
-                return collectedCardStack.Select(card => card.Type == CardType.CARD_10 || card.Type == CardType.CARD_A).Count();
+                return collectedCardStack.Select(card => card.Number == CardNumber.CARD_10 || card.Number == CardNumber.CARD_A).Count();
             }
         }
 

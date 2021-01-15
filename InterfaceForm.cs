@@ -21,6 +21,10 @@ namespace CarlosSeptica
         {
             Pen pen = new Pen(Brushes.Black);
             e.Graphics.DrawLine(pen, 0, 0, 100, 100);
+            Card c = new Card(CardNumber.CARD_7);
+
+            c.Draw(e.Graphics, 150, 350, true);
+            c.Draw(e.Graphics, 150, 550, false);
         }
     }
 }

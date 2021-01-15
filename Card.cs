@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CarlosSeptica
 {
-    public enum CardType
+    public enum CardNumber
     {
         CARD_7,
         CARD_8,
@@ -18,16 +18,29 @@ namespace CarlosSeptica
         CARD_A,
     }
 
+    public enum CardType
+    {
+        CARD_SPADE,  // Frunza
+        CARD_CLUB,   // Trefla
+        CARD_HEART,  // Inima
+        CARD_DIAMOND // Romb
+    }
+
     public class Card
     {
+        public CardNumber Number
+        {
+            get;
+        }
+
         public CardType Type
         {
             get;
-            set;
         }
 
-        public Card(CardType type)
+        public Card(CardNumber number, CardType type)
         {
+            Number = number;
             Type = type;
         }
     }

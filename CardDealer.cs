@@ -33,12 +33,11 @@ namespace CarlosSeptica
         public void Refill()
         {
             cardsLeftInDeck.Clear();
-            foreach(CardType type in Enum.GetValues(typeof(CardType)))
+            foreach(CardNumber number in Enum.GetValues(typeof(CardNumber)))
             {
-                // Add 4 cards of each type
-                for(int i = 0; i < 4; ++i)
+                foreach(CardType type in Enum.GetValues(typeof(CardType)))
                 {
-                    cardsLeftInDeck.Add(new Card(type));
+                    cardsLeftInDeck.Add(new Card(number, type));
                 }
             }
         }
