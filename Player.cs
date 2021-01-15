@@ -28,7 +28,16 @@ namespace CarlosSeptica
         {
             get
             {
-                return hand.ToList().Select(card => card != null).Count();
+                int cards = 0;
+                for(int i = 0; i < hand.Length; ++i)
+                {
+                    if(hand[i] != null)
+                    {
+                        ++cards;
+                    }
+                }
+                // hand.ToList().Select(card => card != null).Count() seems to be fucked up so manually counting...
+                return cards;
             }
         }
 
