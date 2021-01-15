@@ -16,5 +16,11 @@ namespace CarlosSeptica
         {
             InitializeComponent();
         }
+
+        private void pictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            Pen pen = new Pen(Brushes.Black);
+            e.Graphics.DrawLine(pen, 0, 0, 100, 100);
+        }
     }
 }
