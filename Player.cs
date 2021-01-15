@@ -78,7 +78,24 @@ namespace CarlosSeptica
 
         public void AddCardInHand(Card card)
         {
-            for(int i = 0; i < hand.Length; ++i)
+            // Fill cards from left to right for player and right to left for A.I.
+            // Or maybe the other way around
+            //int start = Type == PlayerType.PLAYER_HUMAN ? 3 : 0;
+            //int end = 3 - start;
+            //int increment = start < end ? 1 : -1;
+            //for(int i = start; i != (end + increment); i += increment)
+            //{
+            //    if (hand[i] == null)
+            //    {
+            //        hand[i] = card;
+            //        break;
+            //    }
+            //}
+            //
+            // ^^^ I like this shit better, but the teammates doesn't seem to agree... fuck my life :|
+            //
+
+            for (int i = 0; i < hand.Length; ++i)
             {
                 if (hand[i] == null)
                 {

@@ -117,6 +117,11 @@ namespace CarlosSeptica
             }
         }
 
+        public void OnPlayerClick(int x, int y)
+        {
+
+        }
+
         public void Draw(Graphics g)
         {
             State.PlayerHuman.Draw(g, 250, 450);

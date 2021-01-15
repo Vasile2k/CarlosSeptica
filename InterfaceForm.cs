@@ -27,7 +27,7 @@ namespace CarlosSeptica
         {
             CarlosSeptica.game.Update();
             pictureBox.Refresh();
-            Debug.WriteLine("Update loop!");
+            //Debug.WriteLine("Update loop!");
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
@@ -35,6 +35,14 @@ namespace CarlosSeptica
             CarlosSeptica.game.Start();
             buttonStart.Enabled = false;
             buttonStart.Visible = false;
+        }
+
+        private void pictureBox_Click(object sender, EventArgs e)
+        {
+            MouseEventArgs me = (MouseEventArgs)e;
+            Point coordinates = me.Location;
+
+            CarlosSeptica.game.OnPlayerClick(coordinates.X, coordinates.Y);
         }
     }
 }
