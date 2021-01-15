@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,34 @@ namespace CarlosSeptica
             Type = type;
             hand = new Card[4];
             collectedCardStack = new List<Card>();
+        }
+
+        public void Draw(Graphics g, int x, int y)
+        {
+            // Draw cards in hand
+            for(int i = 0; i < hand.Length; ++i)
+            {
+                if(hand[i] != null)
+                {
+                    hand[i].Draw(g, x + 100 * i, y, Type == PlayerType.PLAYER_AI);
+                }
+            }
+
+            // Draw cards in stack
+            for (int i = 0; i < collectedCardStack.Count; ++i)
+            {
+                collectedCardStack[i].Draw(g, 450 + x + i, y, true);
+            }
+
+            // Draw name
+            Font drawFont = new Font("Arial", 32);
+            SolidBrush drawBrush = new SolidBrush(Color.Black);
+            bool h = Type == PlayerType.PLAYER_HUMAN;
+            g.DrawString(h ? "HOOMAN" : "CARLOS A.I.", drawFont, drawBrush, h ? x + 100 : x + 70, h ? y + 150 : y - 50);
+
+            // Draw score
+            drawFont = new Font("Arial", 16);
+            g.DrawString("Score: " + Score, drawFont, drawBrush, x + 450, h ? y + 16 + 133 : y - 20 - 16);
         }
 
         public Card[] GetCardsInHand()
