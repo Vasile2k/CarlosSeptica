@@ -15,7 +15,8 @@ namespace CarlosSeptica
         STATUS_YOUR_TURN,
         STATUS_AI_TURN,
         STATUS_WON,
-        STATUS_LOST
+        STATUS_LOST,
+        STATUS_TIE
     }
 
     public class GameStatusHelper
@@ -36,6 +37,8 @@ namespace CarlosSeptica
                     return "You won!";
                 case GameStatus.STATUS_LOST:
                     return "Carlos won!";
+                case GameStatus.STATUS_TIE:
+                    return "Tie!";
             }
             // Should never reach this
             return "Something unknown happened to the game!";
@@ -61,7 +64,31 @@ namespace CarlosSeptica
         {
             Status = GameStatus.STATUS_NOT_STARTED;
             State = new GameState();
-            septicaEngine = new SepticaEngine(State, this);
+            Action onFinishGame = () =>
+            {
+                if (State.PlayerAI.Score > State.PlayerHuman.Score)
+                {
+                    Status = GameStatus.STATUS_LOST;
+                }
+                else if (State.PlayerAI.Score < State.PlayerHuman.Score)
+                {
+                    Status = GameStatus.STATUS_WON;
+                }
+                else
+                {
+                    Status = GameStatus.STATUS_TIE;
+                }
+            };
+            Action onDistributeCards = () =>
+            {
+                Status = GameStatus.STATUS_DISTRIBUTING_CARDS;
+            };
+            Action onTurnChanged = () =>
+            {
+                bool ai = State.CurrentTurn.Type == PlayerType.PLAYER_AI;
+                Status = ai ? GameStatus.STATUS_AI_TURN : GameStatus.STATUS_YOUR_TURN;
+            };
+            septicaEngine = new SepticaEngine(State, onFinishGame, onDistributeCards, onTurnChanged);
         }
 
         public void Start()
@@ -126,6 +153,10 @@ namespace CarlosSeptica
                     break;
                 }
                 case GameStatus.STATUS_LOST:
+                {
+                    break;
+                }
+                case GameStatus.STATUS_TIE:
                 {
                     break;
                 }

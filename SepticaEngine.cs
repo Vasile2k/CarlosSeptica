@@ -15,12 +15,16 @@ namespace CarlosSeptica
             set;
         }
 
-        private readonly Game game;
+        private Action onFinishGame;
+        private Action onDistributeCards;
+        private Action onTurnChanged;
 
-        public SepticaEngine(GameState gameState, Game game)
+        public SepticaEngine(GameState gameState, Action onFinishGame, Action onDistributeCards, Action onTurnChanged)
         {
             State = gameState;
-            this.game = game;
+            this.onFinishGame = onFinishGame;
+            this.onDistributeCards = onDistributeCards;
+            this.onTurnChanged = onTurnChanged;
         }
 
         public void EndRound(Player player)
@@ -31,12 +35,16 @@ namespace CarlosSeptica
                 winner.AddCardToStack(c);
             }
             State.Table.Cards.Clear();
-            
-            //if() TODO END GAYM IF NO CARDS LEFT
 
-            SetTurn(winner);
-
-            game.Status = GameStatus.STATUS_DISTRIBUTING_CARDS;
+            if (AnyCardsLeft())
+            {
+                SetTurn(winner);
+                onDistributeCards();
+            }
+            else
+            {
+                onFinishGame();
+            }
         }
 
         public void PutCardDown(Player player, int index)
@@ -178,7 +186,7 @@ namespace CarlosSeptica
         {
             bool ai = State.CurrentTurn.Type == PlayerType.PLAYER_AI;
             State.CurrentTurn = ai ? State.PlayerHuman : State.PlayerAI;
-            game.Status = ai ? GameStatus.STATUS_YOUR_TURN : GameStatus.STATUS_AI_TURN;
+            onTurnChanged();
         }
 
         /**
@@ -189,13 +197,12 @@ namespace CarlosSeptica
         {
             bool ai = player.Type == PlayerType.PLAYER_AI;
             State.CurrentTurn = player;
-            game.Status = ai ? GameStatus.STATUS_AI_TURN : GameStatus.STATUS_YOUR_TURN;
+            onTurnChanged();
         }
 
         public bool AnyCardsLeft()
         {
-            // TODO
-            return true;
+            return !State.Dealer.IsEmpty() || State.PlayerHuman.CardsInHand > 0 || State.PlayerAI.CardsInHand > 0 || State.Table.Cards.Count > 0;
         }
 
         private static void DebugMessage(Player player, string message)
