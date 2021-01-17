@@ -16,6 +16,8 @@ namespace CarlosSeptica
         public static int GetAiNextMove(GameState currentGameState)
         {
             GameState clonedGameState = (GameState)currentGameState.Clone();
+            bool result = PlayToEnd(clonedGameState);
+
             SepticaEngine septicaEngine = new SepticaEngine(currentGameState, () => { }, () => { }, () => { });
             int[] possibleMoves = septicaEngine.GetPossibleMoves(currentGameState.PlayerAI);
             int move = new Random().Next(possibleMoves.Length);
@@ -26,11 +28,46 @@ namespace CarlosSeptica
         /**
          * Plays current game 'till end with random moves
          * Performs a rollout simulation
-         * <returns>the winner of the game (tie is considered lost)</returns>
+         * <returns>true if the game is won (tie is considered lost)</returns>
          */
-        public static Player PlayToEnd(GameState gameState)
+        public static bool PlayToEnd(GameState gameState)
         {
-            return null;
+            // TODO: SHIT FUCK DICK REMOVE SEED
+            Random movinRandom = new Random(420);
+
+            bool gameFinished = false;
+            Action onFinishGame = () =>
+            {
+                gameFinished = true;
+            };
+            Action onDistributeCards = () =>
+            {
+                // The order doesn't mater since it's random
+                // In main game is made just4fun
+                // The important thing is to give them one to a player, one to the other player
+                // Because they should have equal amount of cards
+                // And the starting number of cards is even
+                while (!gameState.PlayerAI.IsHandFull && !gameState.PlayerHuman.IsHandFull && !gameState.Dealer.IsEmpty())
+                {
+                    gameState.PlayerAI.AddCardInHand(gameState.Dealer.GiveCard());
+                    gameState.PlayerHuman.AddCardInHand(gameState.Dealer.GiveCard());
+                }
+            };
+            Action onTurnChanged = () =>
+            {
+                // Well, I don't think I have to do somethin' here
+            };
+            SepticaEngine septicaEngine = new SepticaEngine(gameState, onFinishGame, onDistributeCards, onTurnChanged);
+
+            while (!gameFinished)
+            {
+                Player currentTurn = gameState.CurrentTurn;
+                int[] possibleMoves = septicaEngine.GetPossibleMoves(currentTurn);
+                int nextMove = possibleMoves[movinRandom.Next(possibleMoves.Length)];
+                septicaEngine.PutCardDown(currentTurn, nextMove);
+            }
+
+            return gameState.PlayerAI.Score > gameState.PlayerHuman.Score;
         }
 
     }
