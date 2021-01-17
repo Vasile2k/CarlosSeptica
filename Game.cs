@@ -298,7 +298,7 @@ namespace CarlosSeptica
                 case 3:
                     return 15000;
             }
-            throw new Exception("Difficulty not selected!");
+            throw new Exception("Difficulty not selected");
         }
     }
 }

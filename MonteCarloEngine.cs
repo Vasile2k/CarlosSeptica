@@ -9,6 +9,10 @@ namespace CarlosSeptica
 {
     public class MonteCarloEngine
     {
+        // TODO FOR A GUY WITH TOO MUCH FREE TIME: REUSE THE TREE COMPUTED 'TILL NOW
+        // TODO FOR ANOTHER GUY WITH TOO MUCH FREE TIME: IF YOU HAVE ONLY ONE POSSIBLE MOVE
+        //                                              THEN FUCKING DO IT AND STOP THINKING!
+        // ONE MORE SHIT: YOU DON'T KNOW WHAT CARDS YOUR OPPONENT HAS SO...
         /**
          * Computes next movement to be done by Carlos A.I.
          * <returns>0-3 for putting down a card in hand or -1 to skip round</returns>
@@ -23,19 +27,73 @@ namespace CarlosSeptica
             for(int simulation = 0; simulation < simulations; ++simulation)
             {
                 // Select
+                TreeNode leaf = simulationTree.SelectUCB1();
+
                 // Expand
-                // Simulate
-                // Backpropagate
-                // Da' o mu#e nu vrei tu?
+                SepticaEngine expansionEngine = new SepticaEngine(leaf.State);
+                int[] futureMoves = expansionEngine.GetPossibleMoves(leaf.State.CurrentTurn);
+                foreach(int futureMove in futureMoves)
+                {
+                    // Simulate
+                    GameState futureState = (GameState)leaf.State.Clone();
+                    TreeNode child = new TreeNode(futureState, futureMove);
+                    // If the move we decide to do is to end round we also have to redistribute cards from the dealer
+                    // WE LOST 2 FUCKING HOURS WITH THIS ERROR
+                    Action onDistributeCards = () =>
+                    {
+                        // Look at PlayToEnd() for details
+                        while (!futureState.PlayerAI.IsHandFull && !futureState.PlayerHuman.IsHandFull && !futureState.Dealer.IsEmpty())
+                        {
+                            futureState.PlayerAI.AddCardInHand(futureState.Dealer.GiveCard());
+                            futureState.PlayerHuman.AddCardInHand(futureState.Dealer.GiveCard());
+                        }
+                    };
+                    SepticaEngine playoutEngine = new SepticaEngine(futureState, () => { }, onDistributeCards, () => { });
+                    playoutEngine.PutCardDown(futureState.CurrentTurn, futureMove);
+                    if (playoutEngine.IsGameDone())
+                    {
+                        if(futureState.PlayerAI.Score > futureState.PlayerHuman.Score)
+                        {
+                            // Won
+                            // Biggest possible value and lowest for parent
+                            child.Victories = int.MaxValue;
+
+                            // Parent should not be chosen again since I have a victory from it
+                            leaf.Victories = int.MinValue;
+
+                            // Backpropagate
+                            leaf.AddChild(child);
+                            child.Backpropagate(true);
+                            // Also, if I have a victory I don't care what other expansions lead to
+                            break;
+                        }
+                        else
+                        {
+                            // Lost
+                            // Lowest possible value so it won't be chosen again
+                            child.Victories = int.MinValue;
+
+                            // Backpropagate
+                            leaf.AddChild(child);
+                            child.Backpropagate(false);
+                        }
+                    }
+                    else
+                    {
+                        // If game is not done, then simulate
+                        GameState stateToPlayout = (GameState)futureState.Clone();
+                        bool won = PlayToEnd(stateToPlayout);
+
+                        // Backpropagate
+                        leaf.AddChild(child);
+                        child.Backpropagate(won);
+
+                    }
+                }
             }
 
-            //bool result = PlayToEnd(clonedGameState);
-
-            SepticaEngine septicaEngine = new SepticaEngine(currentGameState, () => { }, () => { }, () => { });
-            int[] possibleMoves = septicaEngine.GetPossibleMoves(currentGameState.PlayerAI);
-            int move = new Random().Next(possibleMoves.Length);
-            return possibleMoves[move];
-            //return new Random().Next(5) - 1;
+            TreeNode bestBranch = simulationTree.RootNode.SelectMostVisitedChild();
+            return bestBranch.MoveDone;
         }
 
         /**

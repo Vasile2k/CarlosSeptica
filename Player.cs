@@ -129,7 +129,7 @@ namespace CarlosSeptica
                 {
                     // TODO: REPLACE FALSE WITH Type == PlayerType.PLAYER_AI
                     // TO HIDE AI CARDS AFTER DEBUGGING
-                    hand[i].Draw(g, x + 100 * i, y, false);
+                    hand[i].Draw(g, x + 100 * i, y, Type == PlayerType.PLAYER_AI);
                 }
             }
 

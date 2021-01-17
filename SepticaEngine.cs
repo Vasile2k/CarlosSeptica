@@ -27,6 +27,14 @@ namespace CarlosSeptica
             this.onTurnChanged = onTurnChanged;
         }
 
+        public SepticaEngine(GameState gameState)
+        {
+            State = gameState;
+            this.onFinishGame = () => { };
+            this.onDistributeCards = () => { };
+            this.onTurnChanged = () => { };
+        }
+
         public void EndRound(Player player)
         {
             Player winner = State.Table.HandOwner;
@@ -203,6 +211,11 @@ namespace CarlosSeptica
         public bool AnyCardsLeft()
         {
             return !State.Dealer.IsEmpty() || State.PlayerHuman.CardsInHand > 0 || State.PlayerAI.CardsInHand > 0 || State.Table.Cards.Count > 0;
+        }
+
+        public bool IsGameDone()
+        {
+            return !AnyCardsLeft();
         }
 
         private static void DebugMessage(Player player, string message)

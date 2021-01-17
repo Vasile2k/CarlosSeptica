@@ -27,6 +27,7 @@ namespace CarlosSeptica
             // TODO: REMEMBER TO REMOVE SEED
             // FOR DEBUGGING PURPOSES ONLY
             random = new Random(69);
+            random = new Random();
             cardsLeftInDeck = new List<Card>();
             if (refill)
             {
