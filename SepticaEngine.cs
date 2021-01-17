@@ -32,7 +32,11 @@ namespace CarlosSeptica
             }
             State.Table.Cards.Clear();
             
+            //if() TODO END GAYM IF NO CARDS LEFT
+
             SetTurn(winner);
+
+            game.Status = GameStatus.STATUS_DISTRIBUTING_CARDS;
         }
 
         public void PutCardDown(Player player, int index)
@@ -186,6 +190,12 @@ namespace CarlosSeptica
             bool ai = player.Type == PlayerType.PLAYER_AI;
             State.CurrentTurn = player;
             game.Status = ai ? GameStatus.STATUS_AI_TURN : GameStatus.STATUS_YOUR_TURN;
+        }
+
+        public bool AnyCardsLeft()
+        {
+            // TODO
+            return true;
         }
 
         private static void DebugMessage(Player player, string message)

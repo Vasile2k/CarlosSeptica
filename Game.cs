@@ -82,15 +82,22 @@ namespace CarlosSeptica
                 }
                 case GameStatus.STATUS_DISTRIBUTING_CARDS:
                 {
-                    DistributeOneCard();
-                    if(AreBothPlayersFullOfCards())
+                    if (State.Dealer.IsEmpty())
                     {
-                        // First time after distributing cards select the first player
-                        // Otherwise, the player is already selected by EndRound meth (also remember to do some meth)
-                        if(State.CurrentTurn == null)
+                        Status = State.CurrentTurn.Type == PlayerType.PLAYER_AI ? GameStatus.STATUS_AI_TURN : GameStatus.STATUS_YOUR_TURN;
+                    }
+                    else
+                    {
+                        DistributeOneCard();
+                        if (AreBothPlayersFullOfCards())
                         {
-                            State.CurrentTurn = State.PlayerHuman;
-                            Status = GameStatus.STATUS_YOUR_TURN;
+                            // First time after distributing cards select the first player
+                            // Otherwise, the player is already selected by EndRound meth (also remember to do some meth)
+                            if (State.CurrentTurn == null)
+                            {
+                                State.CurrentTurn = State.PlayerHuman;
+                            }
+                            Status = State.CurrentTurn.Type == PlayerType.PLAYER_AI ? GameStatus.STATUS_AI_TURN : GameStatus.STATUS_YOUR_TURN;
                         }
                     }
                     break;
@@ -127,18 +134,23 @@ namespace CarlosSeptica
 
         public void DistributeOneCard()
         {
-            if (State.PlayerAI.CardsInHand >= State.PlayerHuman.CardsInHand)
+            // Distribute cards to the round winner
+            // Or to human, in first round
+            bool firstRound = State.CurrentTurn == null;
+            Player first = firstRound ? State.PlayerHuman : State.CurrentTurn;
+            Player second = first.Type == PlayerType.PLAYER_AI ? State.PlayerHuman : State.PlayerAI;
+            if (second.CardsInHand >= first.CardsInHand)
             {
-                if (!State.PlayerHuman.IsHandFull)
+                if (!first.IsHandFull)
                 {
-                    State.PlayerHuman.AddCardInHand(State.Dealer.GiveCard());
+                    first.AddCardInHand(State.Dealer.GiveCard());
                 }
             }
             else
             {
-                if (!State.PlayerAI.IsHandFull)
+                if (!second.IsHandFull)
                 {
-                    State.PlayerAI.AddCardInHand(State.Dealer.GiveCard());
+                    second.AddCardInHand(State.Dealer.GiveCard());
                 }
             }
         }

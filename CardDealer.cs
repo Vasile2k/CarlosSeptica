@@ -80,5 +80,10 @@ namespace CarlosSeptica
                 return null;
             }
         }
+
+        public bool IsEmpty()
+        {
+            return cardsLeftInDeck.Count() == 0;
+        }
     }
 }
