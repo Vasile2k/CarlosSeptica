@@ -13,6 +13,8 @@ namespace CarlosSeptica
         // TODO FOR ANOTHER GUY WITH TOO MUCH FREE TIME: IF YOU HAVE ONLY ONE POSSIBLE MOVE
         //                                              THEN FUCKING DO IT AND STOP THINKING!
         // ONE MORE SHIT: YOU DON'T KNOW WHAT CARDS YOUR OPPONENT HAS SO...
+        //                SIMULATE WITH RANDOM CARDS FROM OPPONENT HAND AND DEALER SINCE YOU
+        //          DON'T KNOW WHICH ONE IS WHERE. YOU KNOW JUST YOUR CARDS OR THE CARDS YOU'VE SEEN
         /**
          * Computes next movement to be done by Carlos A.I.
          * <returns>0-3 for putting down a card in hand or -1 to skip round</returns>
