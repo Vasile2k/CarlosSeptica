@@ -60,6 +60,9 @@ namespace CarlosSeptica
 
         private SepticaEngine septicaEngine;
 
+        private const int AI_DELAY = 5;
+        private int timeToWait = 0;
+
         public Game()
         {
             Status = GameStatus.STATUS_NOT_STARTED;
@@ -87,6 +90,10 @@ namespace CarlosSeptica
             {
                 bool ai = State.CurrentTurn.Type == PlayerType.PLAYER_AI;
                 Status = ai ? GameStatus.STATUS_AI_TURN : GameStatus.STATUS_YOUR_TURN;
+                if(Status == GameStatus.STATUS_AI_TURN)
+                {
+                    timeToWait = AI_DELAY;
+                }
             };
             septicaEngine = new SepticaEngine(State, onFinishGame, onDistributeCards, onTurnChanged);
         }
@@ -135,17 +142,23 @@ namespace CarlosSeptica
                 }
                 case GameStatus.STATUS_AI_TURN:
                 {
-                    /*int aiTurn = MonteCarloEngine.GetAiNextMove(State);
-                    if (aiTurn == -1)
+                    if(timeToWait == 0)
                     {
-                        Debug.WriteLine("Carlos selected to end round");
+                        int aiTurn = MonteCarloEngine.GetAiNextMove(State);
+                        if (aiTurn == -1)
+                        {
+                            Debug.WriteLine("Carlos selected to end round");
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Carlos selected card " + aiTurn);
+                        }
+                        septicaEngine.PutCardDown(State.PlayerAI, aiTurn);
                     }
                     else
                     {
-                        Debug.WriteLine("Carlos selected card " + aiTurn);
+                        --timeToWait;
                     }
-                    septicaEngine.PutCardDown(State.PlayerAI, aiTurn);
-                    */
                     break;
                 }
                 case GameStatus.STATUS_WON:
@@ -221,7 +234,7 @@ namespace CarlosSeptica
                     }
                 }
             }
-            else if(Status == GameStatus.STATUS_AI_TURN)
+            /*else if(Status == GameStatus.STATUS_AI_TURN)
             {
                 // TODO: FOR TESTING ONLY, REMOVE FOR FUCK'S SAKE
                 int[] possibleMoves = septicaEngine.GetPossibleMoves(State.PlayerAI);
@@ -236,7 +249,7 @@ namespace CarlosSeptica
                 {
                     Debug.WriteLine("AI tried illegal move!");
                 }
-            }
+            }*/
         }
 
         public void Draw(Graphics g)
