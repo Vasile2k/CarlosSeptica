@@ -82,24 +82,16 @@ namespace CarlosSeptica
                 }
                 case GameStatus.STATUS_DISTRIBUTING_CARDS:
                 {
-                    if(State.PlayerAI.CardsInHand >= State.PlayerHuman.CardsInHand)
+                    DistributeOneCard();
+                    if(AreBothPlayersFullOfCards())
                     {
-                        if (!State.PlayerHuman.IsHandFull)
+                        // First time after distributing cards select the first player
+                        // Otherwise, the player is already selected by EndRound meth (also remember to do some meth)
+                        if(State.CurrentTurn == null)
                         {
-                            State.PlayerHuman.AddCardInHand(State.Dealer.GiveCard());
+                            State.CurrentTurn = State.PlayerHuman;
+                            Status = GameStatus.STATUS_YOUR_TURN;
                         }
-                    }
-                    else
-                    {
-                        if (!State.PlayerAI.IsHandFull)
-                        {
-                            State.PlayerAI.AddCardInHand(State.Dealer.GiveCard());
-                        }
-                    }
-                    if(State.PlayerHuman.IsHandFull && State.PlayerAI.IsHandFull)
-                    {
-                        State.CurrentTurn = State.PlayerHuman;
-                        Status = GameStatus.STATUS_YOUR_TURN;
                     }
                     break;
                 }
@@ -133,11 +125,35 @@ namespace CarlosSeptica
             }
         }
 
+        public void DistributeOneCard()
+        {
+            if (State.PlayerAI.CardsInHand >= State.PlayerHuman.CardsInHand)
+            {
+                if (!State.PlayerHuman.IsHandFull)
+                {
+                    State.PlayerHuman.AddCardInHand(State.Dealer.GiveCard());
+                }
+            }
+            else
+            {
+                if (!State.PlayerAI.IsHandFull)
+                {
+                    State.PlayerAI.AddCardInHand(State.Dealer.GiveCard());
+                }
+            }
+        }
+
+        public bool AreBothPlayersFullOfCards()
+        {
+            return State.PlayerHuman.IsHandFull && State.PlayerAI.IsHandFull;
+        }
+
         public void OnPlayerClick(int x, int y)
         {
-            if(Status == GameStatus.STATUS_YOUR_TURN)
+            if (Status == GameStatus.STATUS_YOUR_TURN)
             {
-                if (false) // If player chooses to finish the round without putting a card down
+                int[] possibleMoves = septicaEngine.GetPossibleMoves(State.PlayerHuman);
+                if (possibleMoves.Length == 1 && possibleMoves[0] == -1) // If player chooses to finish the round without putting a card down
                 {
                     septicaEngine.PutCardDown(State.PlayerHuman, -1);
 
@@ -154,14 +170,20 @@ namespace CarlosSeptica
                     }
                     else
                     {
+                        if (possibleMoves.Contains(-1))
+                        {
+                            septicaEngine.PutCardDown(State.PlayerHuman, -1);
+                        }
                         Debug.WriteLine("Player clicked on air!");
                     }
                 }
             }
             else if(Status == GameStatus.STATUS_AI_TURN)
             {
+                // TODO: FOR TESTING ONLY, REMOVE FOR FUCK'S SAKE
+                int[] possibleMoves = septicaEngine.GetPossibleMoves(State.PlayerAI);
                 int cardId = State.PlayerAI.GetCardHandIndexAtCoords(x - 250, y - 50);
-                if (cardId != -1 && State.PlayerAI.GetCardsInHand()[cardId] != null)
+                if (possibleMoves.Contains(cardId))
                 {
                     septicaEngine.PutCardDown(State.PlayerAI, cardId);
 
@@ -169,7 +191,7 @@ namespace CarlosSeptica
                 }
                 else
                 {
-                    Debug.WriteLine("AI clicked on air!");
+                    Debug.WriteLine("AI tried illegal move!");
                 }
             }
         }
@@ -185,6 +207,26 @@ namespace CarlosSeptica
             Font drawFont = new Font("Arial", 12, FontStyle.Bold);
             SolidBrush drawBrush = new SolidBrush(Color.Black);
             g.DrawString(GameStatusHelper.GetStatusMessage(Status), drawFont, drawBrush, 10, 630);
+
+            // Draw end round
+            if(Status == GameStatus.STATUS_YOUR_TURN)
+            {
+                int[] possibleMoves = septicaEngine.GetPossibleMoves(State.PlayerHuman);
+                Font statusFont = new Font("Arial", 18, FontStyle.Bold);
+                if (possibleMoves.Contains(-1))
+                {
+                    if(possibleMoves.Length > 1)
+                    {
+                        g.DrawString("Click anywhere if", statusFont, drawBrush, 10, 490);
+                        g.DrawString(" ya wanna end!", statusFont, drawBrush, 10, 520);
+                    }
+                    else
+                    {
+                        g.DrawString("  No moves left!", statusFont, drawBrush, 10, 490);
+                        g.DrawString("Click to end round!", statusFont, drawBrush, 10, 520);
+                    }
+                }
+            }
         }
     }
 }

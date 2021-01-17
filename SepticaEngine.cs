@@ -25,7 +25,14 @@ namespace CarlosSeptica
 
         public void EndRound(Player player)
         {
-            // TODO
+            Player winner = State.Table.HandOwner;
+            foreach (Card c in State.Table.Cards)
+            {
+                winner.AddCardToStack(c);
+            }
+            State.Table.Cards.Clear();
+            
+            SetTurn(winner);
         }
 
         public void PutCardDown(Player player, int index)
@@ -37,7 +44,7 @@ namespace CarlosSeptica
                     if (CanEndRound(player))
                     {
                         EndRound(player);
-                        // TODO: maybe change turn
+                        // EndRound changes the turn to winner automatically
                     }
                     else
                     {
@@ -46,9 +53,9 @@ namespace CarlosSeptica
                 }
                 else
                 {
-                    Card card = player.GetCardsInHand()[index];
-                    if(card != null)
+                    if (GetPossibleMoves(player).ToList().Contains(index))
                     {
+                        Card card = player.GetCardsInHand()[index];
                         State.Table.Cards.Add(card);
                         player.GetCardsInHand()[index] = null;
                         if (card.Number == CardNumber.CARD_7 || card.Number == State.Table.Cards.First().Number)
@@ -56,50 +63,25 @@ namespace CarlosSeptica
                             State.Table.HandOwner = player;
                         }
                         FlipTurn();
+
+                        // SHIT FUCK DICK THIS CHECK IS DONE IN UI AND YOU CAN ONLY END
+                        // BECAUSE YOU CAN ONLY END, YOU LITTLE DICK
+                        /*int[] opponentPossibleMoves = GetPossibleMoves(State.CurrentTurn);
+                        if (opponentPossibleMoves.Length == 1 && opponentPossibleMoves[0] == -1)
+                        {
+                            EndRound(State.CurrentTurn);
+                        }*/
                     }
                     else
                     {
-                        DebugMessage(player, "tried to put down inexistent card!");
+                        DebugMessage(player, "tried to put down inexistent card or to do illegal move!");
                     }
-                    
                 }
             }
             else
             {
                 DebugMessage(player, "tried to move when it's not his turn!");
             }
-        }
-
-        public bool AfterTurnCheck()
-        {
-            // TODO
-            if (EvenCardsDown())
-            {
-                if(State.Table.Cards.Last().Number != State.Table.Cards.First().Number && State.Table.Cards.Last().Number != CardNumber.CARD_7)
-                {
-                    Player winner = State.Table.HandOwner;
-                    foreach(Card c in State.Table.Cards)
-                    {
-                        winner.AddCardToStack(c);
-                    }
-                    State.Table.Cards.Clear();
-                }
-                else
-                {
-                    // Can continue only if you have a card that can cut or is the same as the first in the stack
-                    Player nextPlayer = (game.Status == GameStatus.STATUS_YOUR_TURN) ? State.PlayerHuman : State.PlayerAI;
-                    if(nextPlayer.GetCardsInHand().ToList().Where(card => card != null && (card.Number == CardNumber.CARD_7 || card.Number == State.Table.Cards.First().Number)).Count() == 0)
-                    {
-                        Player winner = State.Table.HandOwner;
-                        foreach (Card c in State.Table.Cards)
-                        {
-                            winner.AddCardToStack(c);
-                        }
-                        State.Table.Cards.Clear();
-                    }
-                }
-            }
-            return false;
         }
 
         public bool EvenCardsDown()
@@ -165,8 +147,27 @@ namespace CarlosSeptica
 
         public int[] GetPossibleMoves(Player player)
         {
-            // TODO
-            return null;
+            CardNumber[] possibleCardsDown = GetPossibleCardsDown();
+            List<int> possibleMoves = new List<int>();
+
+            foreach(CardNumber card in possibleCardsDown)
+            {
+                for(int i = 0; i < player.GetCardsInHand().Length; ++i)
+                {
+                    // If player has a card in hand in this position and the card can be put down
+                    if(player.GetCardsInHand()[i] != null && player.GetCardsInHand()[i].Number == card)
+                    {
+                        possibleMoves.Add(i);
+                    }
+                }
+            }
+
+            if (CanEndRound(player))
+            {
+                possibleMoves.Add(-1);
+            }
+
+            return possibleMoves.ToArray();
         }
 
         public void FlipTurn()
@@ -174,6 +175,17 @@ namespace CarlosSeptica
             bool ai = State.CurrentTurn.Type == PlayerType.PLAYER_AI;
             State.CurrentTurn = ai ? State.PlayerHuman : State.PlayerAI;
             game.Status = ai ? GameStatus.STATUS_YOUR_TURN : GameStatus.STATUS_AI_TURN;
+        }
+
+        /**
+         * Sets next turn to player
+         * The player will be the next who puts down card
+         */
+        public void SetTurn(Player player)
+        {
+            bool ai = player.Type == PlayerType.PLAYER_AI;
+            State.CurrentTurn = player;
+            game.Status = ai ? GameStatus.STATUS_AI_TURN : GameStatus.STATUS_YOUR_TURN;
         }
 
         private static void DebugMessage(Player player, string message)
