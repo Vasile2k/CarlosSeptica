@@ -9,14 +9,17 @@ namespace CarlosSeptica
     public static class CarlosSeptica
     {
         public static Game game;
+        public static InterfaceForm interfaceForm;
 
         [STAThread]
         public static void Main()
         {
             game = new Game();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new InterfaceForm());
+            interfaceForm = new InterfaceForm();
+            Application.Run(interfaceForm);
         }
     }
 }

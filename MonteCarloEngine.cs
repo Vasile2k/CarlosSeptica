@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,6 @@ namespace CarlosSeptica
 {
     public class MonteCarloEngine
     {
-
         /**
          * Computes next movement to be done by Carlos A.I.
          * <returns>0-3 for putting down a card in hand or -1 to skip round</returns>
@@ -16,7 +16,20 @@ namespace CarlosSeptica
         public static int GetAiNextMove(GameState currentGameState)
         {
             GameState clonedGameState = (GameState)currentGameState.Clone();
-            bool result = PlayToEnd(clonedGameState);
+            MonteCarloTree simulationTree = MonteCarloTree.Create(clonedGameState);
+
+            int simulations = Game.GetSimulationsNumber();
+
+            for(int simulation = 0; simulation < simulations; ++simulation)
+            {
+                // Select
+                // Expand
+                // Simulate
+                // Backpropagate
+                // Da' o mu#e nu vrei tu?
+            }
+
+            //bool result = PlayToEnd(clonedGameState);
 
             SepticaEngine septicaEngine = new SepticaEngine(currentGameState, () => { }, () => { }, () => { });
             int[] possibleMoves = septicaEngine.GetPossibleMoves(currentGameState.PlayerAI);

@@ -60,6 +60,7 @@
     </Compile>
     <Compile Include="CarlosSeptica.cs" />
     <Compile Include="MonteCarloEngine.cs" />
+    <Compile Include="MonteCarloTree.cs" />
     <Compile Include="SepticaEngine.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

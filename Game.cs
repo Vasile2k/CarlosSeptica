@@ -284,5 +284,21 @@ namespace CarlosSeptica
                 }
             }
         }
+
+        public static int GetSimulationsNumber()
+        {
+            int difficulty = CarlosSeptica.interfaceForm.GetDifficulty();
+            switch (difficulty){
+                case 0:
+                    return 5;
+                case 1:
+                    return 10;
+                case 2:
+                    return 50;
+                case 3:
+                    return 15000;
+            }
+            throw new Exception("Difficulty not selected!");
+        }
     }
 }
