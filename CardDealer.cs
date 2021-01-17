@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CarlosSeptica
 {
-    public class CardDealer
+    public class CardDealer : Clonable
     {
         private Random random;
 
@@ -22,13 +22,16 @@ namespace CarlosSeptica
             }
         }
 
-        public CardDealer()
+        public CardDealer(bool refill = true)
         {
             // TODO: REMEMBER TO REMOVE SEED
             // FOR DEBUGGING PURPOSES ONLY
             random = new Random(69);
             cardsLeftInDeck = new List<Card>();
-            Refill();
+            if (refill)
+            {
+                Refill();
+            }
         }
 
         public void Refill()
@@ -84,6 +87,18 @@ namespace CarlosSeptica
         public bool IsEmpty()
         {
             return cardsLeftInDeck.Count() == 0;
+        }
+
+        public Clonable Clone()
+        {
+            CardDealer clone = new CardDealer(false);
+
+            foreach(Card c in cardsLeftInDeck)
+            {
+                clone.cardsLeftInDeck.Add((Card)c.Clone());
+            }
+
+            return clone;
         }
     }
 }

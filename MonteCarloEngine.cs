@@ -15,6 +15,7 @@ namespace CarlosSeptica
          */
         public static int GetAiNextMove(GameState currentGameState)
         {
+            GameState clonedGameState = (GameState)currentGameState.Clone();
             SepticaEngine septicaEngine = new SepticaEngine(currentGameState, () => { }, () => { }, () => { });
             int[] possibleMoves = septicaEngine.GetPossibleMoves(currentGameState.PlayerAI);
             int move = new Random().Next(possibleMoves.Length);

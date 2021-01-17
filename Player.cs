@@ -14,7 +14,7 @@ namespace CarlosSeptica
         PLAYER_AI
     }
 
-    public class Player
+    public class Player : Clonable
     {
         public PlayerType Type
         {
@@ -129,7 +129,7 @@ namespace CarlosSeptica
                 {
                     // TODO: REPLACE FALSE WITH Type == PlayerType.PLAYER_AI
                     // TO HIDE AI CARDS AFTER DEBUGGING
-                    hand[i].Draw(g, x + 100 * i, y, Type == PlayerType.PLAYER_AI);
+                    hand[i].Draw(g, x + 100 * i, y, false);
                 }
             }
 
@@ -148,6 +148,26 @@ namespace CarlosSeptica
             // Draw score
             drawFont = new Font("Arial", 16);
             g.DrawString("Score: " + Score, drawFont, drawBrush, x + 450, h ? y + 16 + 133 : y - 20 - 16);
+        }
+
+        public Clonable Clone()
+        {
+            Player clone = new Player(Type);
+
+            for(int i = 0; i < hand.Length; ++i)
+            {
+                if(hand[i] != null)
+                {
+                    clone.hand[i] = (Card)hand[i].Clone();
+                }
+            }
+
+            foreach(Card c in collectedCardStack)
+            {
+                clone.AddCardToStack((Card)c.Clone());
+            }
+
+            return clone;
         }
     }
 }

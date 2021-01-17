@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CarlosSeptica
 {
-    public class GameTable
+    public class GameTable : Clonable
     {
         public List<Card> Cards
         {
@@ -32,6 +32,22 @@ namespace CarlosSeptica
             {
                 Cards[i].Draw(g, x + i*35, y, false);
             }
+        }
+
+        /**
+         * Clones current object
+         * Remember to set hand owner after you clone this
+         */
+        public Clonable Clone()
+        {
+            GameTable clone = new GameTable();
+
+            foreach(Card c in Cards)
+            {
+                clone.Cards.Add((Card)c.Clone());
+            }
+
+            return clone;
         }
     }
 }

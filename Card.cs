@@ -28,7 +28,7 @@ namespace CarlosSeptica
         CARD_DIAMOND // Romb
     }
 
-    public class Card
+    public class Card : Clonable
     {
         public CardNumber Number
         {
@@ -58,6 +58,11 @@ namespace CarlosSeptica
             {
                 g.DrawImage(CardImageRegistry.Instance.GetImageForCard(this.Number, this.Type), x, y, cardWidth, cardHeight);
             }
+        }
+
+        public Clonable Clone()
+        {
+            return new Card(Number, Type);
         }
 
         private class CardImageRegistry
