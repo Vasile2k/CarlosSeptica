@@ -23,5 +23,15 @@ namespace CarlosSeptica
             //return new Random().Next(5) - 1;
         }
 
+        /**
+         * Plays current game 'till end with random moves
+         * Performs a rollout simulation
+         * <returns>the winner of the game (tie is considered lost)</returns>
+         */
+        public static Player PlayToEnd(GameState gameState)
+        {
+            return null;
+        }
+
     }
 }
