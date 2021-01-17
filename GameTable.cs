@@ -14,6 +14,12 @@ namespace CarlosSeptica
             get;
         }
 
+        public Player HandOwner
+        {
+            get;
+            set;
+        }
+
         public GameTable()
         {
             Cards = new List<Card>();

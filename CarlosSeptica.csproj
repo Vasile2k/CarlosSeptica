@@ -58,6 +58,8 @@
       <DependentUpon>InterfaceForm.cs</DependentUpon>
     </Compile>
     <Compile Include="CarlosSeptica.cs" />
+    <Compile Include="MonteCarloEngine.cs" />
+    <Compile Include="SepticaEngine.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="InterfaceForm.resx">

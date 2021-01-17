@@ -22,6 +22,12 @@
             get;
         }
 
+        public Player CurrentTurn
+        {
+            get;
+            set;
+        }
+
         public GameState()
         {
             PlayerHuman = new Player(PlayerType.PLAYER_HUMAN);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -46,7 +47,7 @@ namespace CarlosSeptica
         public GameStatus Status
         {
             get;
-            private set;
+            set;
         }
 
         public GameState State
@@ -54,10 +55,13 @@ namespace CarlosSeptica
             get;
         }
 
+        private SepticaEngine septicaEngine;
+
         public Game()
         {
             Status = GameStatus.STATUS_NOT_STARTED;
             State = new GameState();
+            septicaEngine = new SepticaEngine(State, this);
         }
 
         public void Start()
@@ -94,6 +98,7 @@ namespace CarlosSeptica
                     }
                     if(State.PlayerHuman.IsHandFull && State.PlayerAI.IsHandFull)
                     {
+                        State.CurrentTurn = State.PlayerHuman;
                         Status = GameStatus.STATUS_YOUR_TURN;
                     }
                     break;
@@ -104,6 +109,17 @@ namespace CarlosSeptica
                 }
                 case GameStatus.STATUS_AI_TURN:
                 {
+                    /*int aiTurn = MonteCarloEngine.GetAiNextMove(State);
+                    if (aiTurn == -1)
+                    {
+                        Debug.WriteLine("Carlos selected to end round");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Carlos selected card " + aiTurn);
+                    }
+                    septicaEngine.PutCardDown(State.PlayerAI, aiTurn);
+                    */
                     break;
                 }
                 case GameStatus.STATUS_WON:
@@ -119,7 +135,43 @@ namespace CarlosSeptica
 
         public void OnPlayerClick(int x, int y)
         {
+            if(Status == GameStatus.STATUS_YOUR_TURN)
+            {
+                if (false) // If player chooses to finish the round without putting a card down
+                {
+                    septicaEngine.PutCardDown(State.PlayerHuman, -1);
 
+                    Debug.WriteLine("Player selected to end round");
+                }
+                else
+                {
+                    int cardId = State.PlayerHuman.GetCardHandIndexAtCoords(x - 250, y - 450);
+                    if(cardId != -1 && State.PlayerHuman.GetCardsInHand()[cardId] != null)
+                    {
+                        septicaEngine.PutCardDown(State.PlayerHuman, cardId);
+
+                        Debug.WriteLine("Player selected card " + cardId);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Player clicked on air!");
+                    }
+                }
+            }
+            else if(Status == GameStatus.STATUS_AI_TURN)
+            {
+                int cardId = State.PlayerAI.GetCardHandIndexAtCoords(x - 250, y - 50);
+                if (cardId != -1 && State.PlayerAI.GetCardsInHand()[cardId] != null)
+                {
+                    septicaEngine.PutCardDown(State.PlayerAI, cardId);
+
+                    Debug.WriteLine("AI selected card " + cardId);
+                }
+                else
+                {
+                    Debug.WriteLine("AI clicked on air!");
+                }
+            }
         }
 
         public void Draw(Graphics g)

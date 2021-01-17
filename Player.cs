@@ -55,7 +55,7 @@ namespace CarlosSeptica
         {
             get
             {
-                return collectedCardStack.Select(card => card.Number == CardNumber.CARD_10 || card.Number == CardNumber.CARD_A).Count();
+                return collectedCardStack.Where(card => card.Number == CardNumber.CARD_10 || card.Number == CardNumber.CARD_A).Count();
             }
         }
 
@@ -105,6 +105,21 @@ namespace CarlosSeptica
             }
         }
 
+        public int GetCardHandIndexAtCoords(int x, int y)
+        {
+            if(y >= 0 && y <= 133)
+            {
+                for(int i = 0; i < hand.Length; ++i)
+                {
+                    if(x >= 100*i && x <= 100*i + 98)
+                    {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
+
         public void Draw(Graphics g, int x, int y)
         {
             // Draw cards in hand
@@ -112,7 +127,9 @@ namespace CarlosSeptica
             {
                 if(hand[i] != null)
                 {
-                    hand[i].Draw(g, x + 100 * i, y, Type == PlayerType.PLAYER_AI);
+                    // TODO: REPLACE FALSE WITH Type == PlayerType.PLAYER_AI
+                    // TO HIDE AI CARDS AFTER DEBUGGING
+                    hand[i].Draw(g, x + 100 * i, y, false);
                 }
             }
 
